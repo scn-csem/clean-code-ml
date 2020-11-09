@@ -1,6 +1,7 @@
 FROM python:3.6-slim
 
 RUN apt-get update
+RUN apt install vim less
 
 WORKDIR /code
 COPY . /code
