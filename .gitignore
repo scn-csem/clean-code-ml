@@ -22,3 +22,7 @@ htmlcov
 
 # OSX
 .DS_Store
+
+# Spyder
+.spyproject
+
