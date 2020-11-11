@@ -23,7 +23,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn import metrics
 
 
-def prepare_data():
+def prepare_data_and_train_model():
 
     train_df = pd.read_csv("./input/train.csv")
     test_df = pd.read_csv("./input/test.csv")
@@ -102,25 +102,28 @@ def prepare_data():
     X_test  = test_df.copy()
 
 
+    from preprocessing import train_model
+    # from src.preprocessing import train_model
 
-# from src.preprocessing import train_model
+    svc, acc_svc                     = train_model(SVC, X_train, Y_train, gamma='scale')
+    knn, acc_knn                     = train_model(KNeighborsClassifier, X_train, Y_train)
+    gaussian, acc_gaussian           = train_model(GaussianNB, X_train, Y_train)
+    perceptron, acc_perceptron       = train_model(Perceptron, X_train, Y_train)
+    sgd, acc_sgd                     = train_model(SGDClassifier, X_train, Y_train)
+    decision_tree, acc_decision_tree = train_model(DecisionTreeClassifier, X_train, Y_train)
+    random_forest, acc_random_forest = train_model(RandomForestClassifier, X_train, Y_train, n_estimators=100)
 
-# svc, acc_svc                     = train_model(SVC, X_train, Y_train, gamma='scale')
-# knn, acc_knn                     = train_model(KNeighborsClassifier, X_train, Y_train)
-# gaussian, acc_gaussian           = train_model(GaussianNB, X_train, Y_train)
-# perceptron, acc_perceptron       = train_model(Perceptron, X_train, Y_train)
-# sgd, acc_sgd                     = train_model(SGDClassifier, X_train, Y_train)
-# decision_tree, acc_decision_tree = train_model(DecisionTreeClassifier, X_train, Y_train)
-# random_forest, acc_random_forest = train_model(RandomForestClassifier, X_train, Y_train, n_estimators=100)
+    return acc_svc, acc_knn, acc_random_forest, acc_gaussian, acc_perceptron, acc_sgd, acc_decision_tree
 
+acc_svc, acc_knn, acc_random_forest, acc_gaussian, acc_perceptron, acc_sgd, acc_decision_tree = prepare_data_and_train_model()
 
-# models = pd.DataFrame({
-#     'Model': ['Support Vector Machines', 'KNN',
-#               'Random Forest', 'Naive Bayes', 'Perceptron',
-#               'Stochastic Gradient Decent',
-#               'Decision Tree'],
-#     'Score': [acc_svc, acc_knn,
-#               acc_random_forest, acc_gaussian, acc_perceptron,
-#               acc_sgd, acc_decision_tree]})
-# models.sort_values(by='Score', ascending=False)
+models = pd.DataFrame({
+    'Model': ['Support Vector Machines', 'KNN',
+              'Random Forest', 'Naive Bayes', 'Perceptron',
+              'Stochastic Gradient Decent',
+              'Decision Tree'],
+    'Score': [acc_svc, acc_knn,
+              acc_random_forest, acc_gaussian, acc_perceptron,
+              acc_sgd, acc_decision_tree]})
+models.sort_values(by='Score', ascending=False)
 
