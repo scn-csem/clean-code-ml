@@ -10,7 +10,6 @@ import random as rnd
 #data visualization
 import seaborn as sns
 import matplotlib.pyplot as plt
-get_ipython().run_line_magic('matplotlib', 'inline')
 
 #machine learning packages
 from sklearn.linear_model import LogisticRegression
@@ -28,42 +27,29 @@ train_df = pd.read_csv("./input/train.csv")
 test_df = pd.read_csv("./input/test.csv")
 df = pd.concat([train_df,test_df])
 
-df.head()
-
-
 
 df = df.drop(['Ticket', 'Cabin'], axis=1)
 
-
 # [code smell] - Exposed Internals
-
 df['Title'] = df['Name'].str.extract(' ([A-Za-z]+)\.', expand=False)
-
 df['Title'] = df['Title'].replace(['Lady', 'Countess', 'Capt', 'Col',
                                    'Don', 'Dr', 'Major', 'Rev', 'Sir', 'Jonkheer', 'Dona'], 'Rare')
 df['Title'] = df['Title'].replace(['Ms', 'Mlle'], 'Miss')
 df['Title'] = df['Title'].replace(['Mme'], 'Mrs')
-
 title_mapping = {"Mr": 1, "Miss": 2, "Mrs": 3, "Master": 4, "Rare": 5}
-
 df['Title'] = df['Title'].map(title_mapping)
 df['Title'] = df['Title'].fillna(0)
-
-
 
 # [code smell] Duplicate Responsibility - df.drop() happens at multiple places.
 # it would be better if they were consolidated
 df = df.drop(['Name', 'PassengerId'], axis=1)
 
-
 # [code smell] Duplicate Responsibility again - encoding of string variables into integers
 # should be consolidated into one place
 df['Sex'] = df['Sex'].map( {'female': 1, 'male': 0} ).astype(int)
 
-
 # [code smell] Dead Code - 'AgeBand' column is defined but never used
 df['AgeBand'] = pd.cut(df['Age'], 5)
-
 
 # [code smell] - magic numbers: 16, 32, 48
 df.loc[ df['Age'] <= 16, 'Age'] = 0
@@ -71,14 +57,11 @@ df.loc[(df['Age'] > 16) & (df['Age'] <= 32), 'Age'] = 1
 df.loc[(df['Age'] > 32) & (df['Age'] <= 48), 'Age'] = 2
 df.loc[(df['Age'] > 48) & (df['Age'] <= 64), 'Age'] = 3
 
-
 df = df.drop(['AgeBand'], axis=1)
 
 
 # [code smell] Exposed Internals - the next 2 cells could be extracted into a function
 df['FamilySize'] = df['SibSp'] + df['Parch'] + 1
-
-
 df['IsAlone'] = 0
 df.loc[df['FamilySize'] == 1, 'IsAlone'] = 1
 
@@ -86,9 +69,7 @@ df = df.drop(['Parch', 'SibSp', 'FamilySize'], axis=1)
 
 
 freq_port = df.Embarked.dropna().mode()[0]
-
 df['Embarked'] = df['Embarked'].fillna(freq_port)
-
 df['Embarked'] = df['Embarked'].map( {'S': 0, 'C': 1, 'Q': 2} ).astype(int)
 
 
@@ -120,24 +101,24 @@ X_test  = test_df.copy()
 
 
 
-from src.preprocessing import train_model
+# from src.preprocessing import train_model
 
-svc, acc_svc                     = train_model(SVC, X_train, Y_train, gamma='scale')
-knn, acc_knn                     = train_model(KNeighborsClassifier, X_train, Y_train)
-gaussian, acc_gaussian           = train_model(GaussianNB, X_train, Y_train)
-perceptron, acc_perceptron       = train_model(Perceptron, X_train, Y_train)
-sgd, acc_sgd                     = train_model(SGDClassifier, X_train, Y_train)
-decision_tree, acc_decision_tree = train_model(DecisionTreeClassifier, X_train, Y_train)
-random_forest, acc_random_forest = train_model(RandomForestClassifier, X_train, Y_train, n_estimators=100)
+# svc, acc_svc                     = train_model(SVC, X_train, Y_train, gamma='scale')
+# knn, acc_knn                     = train_model(KNeighborsClassifier, X_train, Y_train)
+# gaussian, acc_gaussian           = train_model(GaussianNB, X_train, Y_train)
+# perceptron, acc_perceptron       = train_model(Perceptron, X_train, Y_train)
+# sgd, acc_sgd                     = train_model(SGDClassifier, X_train, Y_train)
+# decision_tree, acc_decision_tree = train_model(DecisionTreeClassifier, X_train, Y_train)
+# random_forest, acc_random_forest = train_model(RandomForestClassifier, X_train, Y_train, n_estimators=100)
 
 
-models = pd.DataFrame({
-    'Model': ['Support Vector Machines', 'KNN',
-              'Random Forest', 'Naive Bayes', 'Perceptron',
-              'Stochastic Gradient Decent',
-              'Decision Tree'],
-    'Score': [acc_svc, acc_knn,
-              acc_random_forest, acc_gaussian, acc_perceptron,
-              acc_sgd, acc_decision_tree]})
-models.sort_values(by='Score', ascending=False)
+# models = pd.DataFrame({
+#     'Model': ['Support Vector Machines', 'KNN',
+#               'Random Forest', 'Naive Bayes', 'Perceptron',
+#               'Stochastic Gradient Decent',
+#               'Decision Tree'],
+#     'Score': [acc_svc, acc_knn,
+#               acc_random_forest, acc_gaussian, acc_perceptron,
+#               acc_sgd, acc_decision_tree]})
+# models.sort_values(by='Score', ascending=False)
 
