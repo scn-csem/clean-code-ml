@@ -27,7 +27,7 @@ def prepare_data_and_train_model():
 
     train_df = pd.read_csv("./input/train.csv")
     test_df = pd.read_csv("./input/test.csv")
-    df = pd.concat([train_df,test_df])
+    df = pd.concat([train_df,test_df], sort=False)
 
 
     df = df.drop(['Ticket', 'Cabin'], axis=1)
